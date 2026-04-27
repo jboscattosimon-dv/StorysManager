@@ -148,21 +148,34 @@ export function EditorToolbar() {
 
           <div>
             <label className="text-xs mb-1.5 block" style={{ color: '#9ca3af' }}>Fonte</label>
-            <div className="flex gap-1.5 flex-wrap">
-              {fontOptions.map((font) => (
-                <button
-                  key={font}
-                  onClick={() => updateTextElement(selectedEl.id, { fontFamily: font })}
-                  className="px-2 py-1 rounded-md text-xs transition-colors"
-                  style={{
-                    fontFamily: font,
-                    backgroundColor: selectedEl.fontFamily === font ? 'rgba(124,58,237,0.25)' : 'var(--color-surface)',
-                    color: selectedEl.fontFamily === font ? '#a855f7' : '#9ca3af',
-                    border: `1px solid ${selectedEl.fontFamily === font ? '#7c3aed' : 'transparent'}`,
-                  }}>
-                  {font}
-                </button>
-              ))}
+            <div className="grid grid-cols-2 gap-1.5">
+              {fontOptions.map((font) => {
+                const isActive = selectedEl.fontFamily === font.family
+                return (
+                  <button
+                    key={font.family}
+                    onClick={() => updateTextElement(selectedEl.id, { fontFamily: font.family })}
+                    className="px-2 py-2 rounded-lg text-sm transition-all text-left flex flex-col gap-0.5"
+                    style={{
+                      backgroundColor: isActive ? 'rgba(124,58,237,0.2)' : 'var(--color-surface)',
+                      border: `1px solid ${isActive ? '#7c3aed' : 'var(--color-border)'}`,
+                    }}>
+                    <span className="text-xs" style={{ color: isActive ? '#a855f7' : '#6b7280' }}>
+                      {font.label}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: font.family,
+                        fontSize: '16px',
+                        color: isActive ? '#ffffff' : '#d1d5db',
+                        lineHeight: 1.2,
+                        fontWeight: font.style === 'strong' ? 700 : 400,
+                      }}>
+                      Aa
+                    </span>
+                  </button>
+                )
+              })}
             </div>
           </div>
 

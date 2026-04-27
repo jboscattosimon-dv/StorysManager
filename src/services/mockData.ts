@@ -285,7 +285,7 @@ export const mockTemplates: Template[] = [
         x: 20,
         y: 20,
         fontSize: 80,
-        fontFamily: 'Georgia',
+        fontFamily: 'DM Serif Display',
         color: 'rgba(255,255,255,0.3)',
         rotation: 0,
         bold: true,
@@ -441,6 +441,90 @@ export const mockTemplates: Template[] = [
       },
     ],
   },
+  {
+    id: 'tmpl7',
+    name: 'Poster Bold',
+    category: 'promotion',
+    thumbnail: '',
+    backgroundColor: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
+    textElements: [
+      {
+        content: 'GRANDE',
+        x: 50,
+        y: 32,
+        fontSize: 62,
+        fontFamily: 'Paytone One',
+        color: '#ffffff',
+        rotation: 0,
+        bold: false,
+        italic: false,
+      },
+      {
+        content: 'PROMOÇÃO',
+        x: 50,
+        y: 52,
+        fontSize: 48,
+        fontFamily: 'Paytone One',
+        color: '#f59e0b',
+        rotation: 0,
+        bold: false,
+        italic: false,
+      },
+      {
+        content: 'Aproveite agora ⚡',
+        x: 50,
+        y: 74,
+        fontSize: 20,
+        fontFamily: 'Inter',
+        color: 'rgba(255,255,255,0.75)',
+        rotation: 0,
+        bold: false,
+        italic: false,
+      },
+    ],
+  },
+  {
+    id: 'tmpl8',
+    name: 'Deco Elegante',
+    category: 'product',
+    thumbnail: '',
+    backgroundColor: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
+    textElements: [
+      {
+        content: '✦ NOVA COLEÇÃO ✦',
+        x: 50,
+        y: 25,
+        fontSize: 18,
+        fontFamily: 'Poiret One',
+        color: '#d4af37',
+        rotation: 0,
+        bold: false,
+        italic: false,
+      },
+      {
+        content: 'Elegância',
+        x: 50,
+        y: 48,
+        fontSize: 56,
+        fontFamily: 'Poiret One',
+        color: '#ffffff',
+        rotation: 0,
+        bold: false,
+        italic: false,
+      },
+      {
+        content: '— em cada detalhe',
+        x: 50,
+        y: 68,
+        fontSize: 20,
+        fontFamily: 'Poiret One',
+        color: '#d4af37',
+        rotation: 0,
+        bold: false,
+        italic: false,
+      },
+    ],
+  },
 ]
 
 export const gradientOptions = [
@@ -456,7 +540,25 @@ export const gradientOptions = [
   'linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%)',
 ]
 
-export const fontOptions = ['Inter', 'Poppins', 'Georgia', 'Arial', 'Courier New']
+export interface FontOption {
+  label: string
+  family: string
+  style?: 'neon' | 'strong' | 'default'
+  preview?: string
+}
+
+export const fontOptions: FontOption[] = [
+  { label: 'Clássico',    family: 'Inter',             style: 'default' },
+  { label: 'Moderno',     family: 'DM Serif Display',  style: 'default' },
+  { label: 'Poster',      family: 'Paytone One',        style: 'default' },
+  { label: 'Deco',        family: 'Poiret One',         style: 'default' },
+  { label: 'Forte',       family: 'Bebas Neue',         style: 'strong'  },
+  { label: 'Máquina',     family: 'Special Elite',      style: 'default' },
+  { label: 'Marcador',    family: 'Permanent Marker',   style: 'default' },
+  { label: 'Cursivo',     family: 'Lobster',            style: 'default' },
+  { label: 'Poppins',     family: 'Poppins',            style: 'default' },
+  { label: 'Oswald',      family: 'Oswald',             style: 'strong'  },
+]
 
 export const stickerOptions = [
   '🔥', '⚡', '🚀', '✨', '💫', '❤️', '🎉', '🎊',
