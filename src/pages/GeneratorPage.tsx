@@ -9,6 +9,7 @@ import { generateStoryFrames, type StoryStyle } from '../hooks/useAutoLayout'
 import { useAppStore } from '../store/useAppStore'
 import {
   canvaConfigured, getCanvaToken, startCanvaOAuth, saveFramesToCanva,
+  exchangeCanvaCode, popPendingUpload,
 } from '../services/canva'
 import type { StoryFrame, TextElement } from '../types'
 
@@ -401,6 +402,32 @@ export function GeneratorPage() {
 
   useEffect(() => { saveProjects(projects) }, [projects])
 
+  // Handle OAuth redirect back from Canva: ?code=...&state=canva_save
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const code  = params.get('code')
+    const state = params.get('state')
+    if (code && state === 'canva_save') {
+      window.history.replaceState({}, '', window.location.pathname)
+      setCanvaStatus('saving')
+      setCanvaMsg('Conectando ao Canva...')
+
+      exchangeCanvaCode(code)
+        .then(() => {
+          const pending = popPendingUpload()
+          if (pending) {
+            setFrames(pending.frames)
+            return doCanvaUpload(pending.frames, pending.projectName)
+          }
+        })
+        .catch(e => {
+          setCanvaStatus('error')
+          setCanvaMsg(`Erro na autenticação: ${e instanceof Error ? e.message : String(e)}`)
+        })
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -458,39 +485,39 @@ export function GeneratorPage() {
     setCurrentPage('editor')
   }
 
+  const doCanvaUpload = async (framesToUpload: StoryFrame[], projectName: string) => {
+    setCanvaStatus('saving')
+    setCanvaLinks([])
+    try {
+      const urls = await saveFramesToCanva(framesToUpload, projectName, msg => setCanvaMsg(msg))
+      setCanvaLinks(urls)
+      setCanvaStatus('done')
+      setCanvaMsg(`${urls.length} design${urls.length > 1 ? 's' : ''} salvo${urls.length > 1 ? 's' : ''} no Canva!`)
+      urls.forEach(url => { if (url && !url.includes('your-projects')) window.open(url, '_blank') })
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Erro desconhecido'
+      setCanvaStatus('error')
+      setCanvaMsg(msg)
+    }
+  }
+
   const handleSaveToCanva = async () => {
     if (frames.length === 0) return
     const projectName = text.trim().split('\n')[0].slice(0, 40) || 'Story'
 
     if (!canvaConfigured) {
-      setCanvaMsg('Configure VITE_CANVA_CLIENT_ID nas variáveis de ambiente.')
+      setCanvaMsg('Configure VITE_CANVA_CLIENT_ID nas variáveis de ambiente do Vercel.')
       setCanvaStatus('error')
       return
     }
 
     if (!getCanvaToken()) {
-      await startCanvaOAuth()
+      // Save frames before redirecting — they'll be restored after OAuth
+      await startCanvaOAuth({ frames, projectName })
       return
     }
 
-    setCanvaStatus('saving')
-    setCanvaMsg('Iniciando envio...')
-    setCanvaLinks([])
-
-    try {
-      const urls = await saveFramesToCanva(frames, projectName, msg => setCanvaMsg(msg))
-      setCanvaLinks(urls)
-      setCanvaStatus('done')
-      setCanvaMsg(`${urls.length} design${urls.length > 1 ? 's' : ''} salvo${urls.length > 1 ? 's' : ''} no Canva!`)
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Erro desconhecido'
-      if (msg === 'NOT_AUTHENTICATED') {
-        await startCanvaOAuth()
-      } else {
-        setCanvaStatus('error')
-        setCanvaMsg(msg)
-      }
-    }
+    await doCanvaUpload(frames, projectName)
   }
 
   const deleteFrame = (id: string) => setFrames(prev => prev.filter(f => f.id !== id))
