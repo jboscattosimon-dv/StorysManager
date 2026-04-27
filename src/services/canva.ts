@@ -47,7 +47,6 @@ export async function startCanvaOAuth(pending?: PendingUpload) {
   const challenge = await sha256B64url(verifier)
   sessionStorage.setItem(VERIFIER_KEY, verifier)
 
-  const redirectUri = window.location.origin
   const url = new URL('https://www.canva.com/api/oauth/authorize')
   url.searchParams.set('response_type',         'code')
   url.searchParams.set('client_id',             CLIENT_ID)
